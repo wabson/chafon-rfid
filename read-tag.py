@@ -147,7 +147,7 @@ def read_tags(reader_addr, appender):
                         appender.add_row([ boat_num, boat_time, '', '' ])
                 else:
                     print "Non-marathon tag 0x%s" % (binascii.hexlify(tag))
-            print "received %s tags" % (resp.num_tags)
+            #print "received %s tags" % (resp.num_tags)
         except KeyboardInterrupt:
             running = False
             print "KeyboardInterrupt"
@@ -155,7 +155,7 @@ def read_tags(reader_addr, appender):
             pass
         end = time.time()
         s.close()
-        print "elapsed time %.2f" % (end - start)
+        #print "elapsed time %.2f" % (end - start)
         try:
             time.sleep(1)
         except KeyboardInterrupt:
