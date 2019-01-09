@@ -32,6 +32,7 @@ class G2InventoryResponse(ReaderResponse):
 
     def __init__(self, resp_bytes):
         super(G2InventoryResponse, self).__init__(resp_bytes)
+        self.num_tags = 0
         if len(self.data) > 0:
             self.num_tags = self.data[0]
 
@@ -150,6 +151,8 @@ def read_tags(reader_addr, appender):
         except KeyboardInterrupt:
             running = False
             print "KeyboardInterrupt"
+        except socket.error as err:
+            pass
         end = time.time()
         s.close()
         print "elapsed time %.2f" % (end - start)
