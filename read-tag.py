@@ -157,7 +157,7 @@ def read_tags(reader_addr, appender):
         s.close()
         #print "elapsed time %.2f" % (end - start)
         try:
-            time.sleep(1)
+            time.sleep(0.05)
         except KeyboardInterrupt:
             running = False
             print "KeyboardInterrupt"
