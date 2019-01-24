@@ -7,9 +7,9 @@ via TCP/IP and upload the times recorded to a Google Sheet.
 Installation
 ------------
 
-Install Google client libs via `pip`
+Install Google client and pyserial libs via `pip`
 
-    pip install --upgrade google-api-python-client oauth2client
+    pip install --upgrade google-api-python-client oauth2client pyserial
 
 Usage
 -----
