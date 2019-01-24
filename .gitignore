@@ -1,0 +1,3 @@
+**/*.pyc
+google-credentials.json
+google-token.json
