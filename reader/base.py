@@ -27,7 +27,7 @@ class CommandRunner(object):
 
     def run(self, command):
         self.transport.write(command.serialize())
-        return self.transport.read()
+        return self.transport.read_frame()
 
 class ReaderResponseFrame(object):
 
@@ -91,6 +91,8 @@ class ReaderInfoFrame(ReaderResponseFrame):
             self.frequency_band = ReaderFrequencyBand(((dmaxfre & 0b11000000 ) >> 4) + ((dminfre & 0b11000000 ) >> 6))
             self.power = self.data[6]
             self.scan_time = self.data[7]
+        else:
+            raise ValueError('Data must be at least 8 characters')
 
     def get_regional_frequency(self, fnum):
         if self.frequency_band is ReaderFrequencyBand.EU:
