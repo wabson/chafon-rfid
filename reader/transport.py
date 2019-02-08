@@ -50,10 +50,16 @@ class TcpTransport(BaseTransport):
 
     buffer_size = 0xFF
 
-    def __init__(self, reader_addr, reader_port, timeout=5):
+    def __init__(self, reader_addr, reader_port, timeout=5, auto_connect=False):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(timeout)
-        self.socket.connect((reader_addr, reader_port))
+        self.reader_addr = reader_addr
+        self.reader_port = reader_port
+        if auto_connect:
+            self.connect()
+
+    def connect(self):
+        self.socket.connect((self.reader_addr, self.reader_port))
 
     def read_bytes(self, length):
         return self.socket.recv(length)

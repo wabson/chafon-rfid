@@ -12,7 +12,7 @@ get_inventory_288 = G2InventoryCommand(q_value=4)
 get_inventory_uhfreader18 = ReaderCommand(G2_TAG_INVENTORY)
 
 #transport = MockTransport(bytearray.fromhex('1100210000160c034e001e0a01000000e651' + '1500010301010c0000000000000000000003136bb1a51500010301010c3039606303c74380001a055940f93e1500010301010c49440000000000000a0003346457660d000103010104003230386da3d20700010101001e4b'))
-#transport = SerialTransport()
+#transport = SerialTransport(auto_connect=True)
 #transport = TcpTransport(reader_addr='192.168.0.250', reader_port=27011)
 transport = TcpTransport(reader_addr='192.168.1.190', reader_port=6000)
 runner = CommandRunner(transport)
