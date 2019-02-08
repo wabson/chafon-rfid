@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .base import G2InventoryResponse as BaseG2InventoryResponse, ReaderResponseFrame
+from .base import G2InventoryResponse as BaseG2InventoryResponse, ReaderResponseFrame, Tag, TagData
 
 class G2InventoryResponseFrame(ReaderResponseFrame):
 
@@ -12,7 +12,7 @@ class G2InventoryResponseFrame(ReaderResponseFrame):
 
     def get_tag(self):
         if len(self.data) > 1:
-            tag_data = TagData(self.data[1:], prefix_bytes=0, suffix_bytes=0)
+            tag_data = TagData(self.data, prefix_bytes=0, suffix_bytes=0)
             for data_item in tag_data.get_tag_data():
                 epc_value = data_item[1]
                 yield Tag(epc_value)
