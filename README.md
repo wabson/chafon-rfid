@@ -11,8 +11,9 @@ Install Google client and pyserial libs via `pip`
 
     pip install --upgrade google-api-python-client oauth2client pyserial
 
-Follow the steps in the Google Sheets API Python Quickstart, to allow times to be
-added to a spreadsheet (optional)
+Follow the steps in the [Google Sheets API Python
+Quickstart](https://developers.google.com/sheets/api/quickstart/python),
+to allow times to be added to a spreadsheet (optional)
 
 Usage
 -----
