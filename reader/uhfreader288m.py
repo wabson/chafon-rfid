@@ -13,6 +13,7 @@ class G2InventoryCommand(ReaderCommand):
         #cmd_data = [ 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x14 ]
         super(G2InventoryCommand, self).__init__(G2_TAG_INVENTORY, data=cmd_data)
 
+
 class G2InventoryResponseFrame(ReaderResponseFrame):
 
     tag_prefix_bytes = 0
@@ -36,6 +37,7 @@ class G2InventoryResponseFrame(ReaderResponseFrame):
                 epc_value = data_item[1]
                 rssi = data_item[2][0]
                 yield Tag(epc_value, antenna_num=self.antenna, rssi=rssi)
+
 
 class G2InventoryResponse(BaseG2InventoryResponse):
 

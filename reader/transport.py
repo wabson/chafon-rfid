@@ -4,9 +4,10 @@ import abc
 import serial
 import socket
 
+
 class BaseTransport(object):
 
-    __metaclass__=abc.ABCMeta
+    __metaclass__ = abc.ABCMeta
     read_bytecount = 0x100
 
     def __init__(self):
@@ -32,6 +33,7 @@ class BaseTransport(object):
     def write(self, byte_array):
         self.write_bytes(byte_array)
 
+
 class SerialTransport(BaseTransport):
 
     def __init__(self, device='/dev/ttyUSB0', baud_rate=57600, timeout=5):
@@ -45,6 +47,7 @@ class SerialTransport(BaseTransport):
 
     def close(self):
         self.serial.close()
+
 
 class TcpTransport(BaseTransport):
 
@@ -69,6 +72,7 @@ class TcpTransport(BaseTransport):
 
     def close(self):
         self.socket.close()
+
 
 class MockTransport(BaseTransport):
 

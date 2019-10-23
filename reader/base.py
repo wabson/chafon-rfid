@@ -1,6 +1,7 @@
 from checksum import checksum
 from enum import Enum
 
+
 class ReaderCommand(object):
 
     def __init__(self, cmd, addr=0xFF, data=[]):
@@ -20,6 +21,7 @@ class ReaderCommand(object):
         crc_lsb = crc & 0xFF
         return bytearray([ crc_lsb, crc_msb ])
 
+
 class CommandRunner(object):
 
     def __init__(self, transport):
@@ -29,20 +31,21 @@ class CommandRunner(object):
         self.transport.write(command.serialize())
         return self.transport.read_frame()
 
+
 class ReaderResponseFrame(object):
 
     def __init__(self, resp_bytes, offset=0):
         if len(resp_bytes) < 5:
-            raise ValueError('Response must be at least 5 bytes');
+            raise ValueError('Response must be at least 5 bytes')
         self.len = resp_bytes[offset]
         if self.len + offset > len(resp_bytes) - 1:
-            raise ValueError('Response does not contain enough bytes for frame (expected %d bytes after offset %d, actual length %d)' % (self.len, offset, len(resp_bytes)));
+            raise ValueError('Response does not contain enough bytes for frame (expected %d bytes after offset %d, actual length %d)' % (self.len, offset, len(resp_bytes)))
         self.reader_addr = resp_bytes[offset+1]
         self.resp_cmd = resp_bytes[offset+2]
         self.result_status = resp_bytes[offset+3]
         self.data = resp_bytes[offset+4:offset+self.len-1]
         cs_status = self.verify_checksum(resp_bytes[offset:offset+self.len-1], resp_bytes[offset+self.len-1:offset+self.len+1])
-        if cs_status != True:
+        if cs_status is not True:
             raise(ValueError('Checksum does not match'))
 
     def verify_checksum(self, data_bytes, checksum_bytes):
@@ -57,6 +60,7 @@ class ReaderResponseFrame(object):
     def get_data(self):
         return self.data
 
+
 class ReaderFrequencyBand(Enum):
 
     China2  = 0b0001
@@ -70,10 +74,12 @@ class ReaderFrequencyBand(Enum):
     Taiwan  = 0b1010
     US3     = 0b1100
 
+
 class ReaderType(Enum):
 
     UHFReader18   = 0x09
     UHFReader288M = 0x0c
+
 
 class ReaderInfoFrame(ReaderResponseFrame):
 
@@ -106,6 +112,7 @@ class ReaderInfoFrame(ReaderResponseFrame):
     def get_max_frequency(self):
         return self.get_regional_frequency(self.max_frequency)
 
+
 class G2InventoryResponse(object):
 
     frame_class = None
@@ -124,6 +131,7 @@ class G2InventoryResponse(object):
         for response_frame in self.get_frame():
             for tag in response_frame.get_tag():
                 yield tag
+
 
 class TagData(object):
 
@@ -145,6 +153,7 @@ class TagData(object):
             yield (self.data[tag_data_start:tag_main_start], self.data[tag_main_start:tag_main_end], self.data[tag_main_end:next_tag_start])
             pointer = next_tag_start
             n += 1
+
 
 class Tag(object):
 

@@ -15,4 +15,4 @@ def checksum(pucY):
     return uiCrcValue;
 
 if __name__ == '__main__':
-    print '%X' % (checksum(bytearray.fromhex(sys.argv[1])),)
+    print('%X' % (checksum(bytearray.fromhex(sys.argv[1])),))

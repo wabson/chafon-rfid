@@ -18,8 +18,8 @@ transport = TcpTransport(reader_addr='192.168.1.190', reader_port=6000)
 runner = CommandRunner(transport)
 
 reader_info = ReaderInfoFrame(runner.run(get_reader_info))
-print 'Reader info: type %s version %d.%d, power %d dB ' % (reader_info.type.name, reader_info.firmware_version[0], reader_info.firmware_version[1], reader_info.power)
-print 'Frequency info: region %s, %.1f-%.1f MHz' % (reader_info.frequency_band.name, reader_info.get_min_frequency(), reader_info.get_max_frequency())
+print('Reader info: type %s version %d.%d, power %d dB ' % (reader_info.type.name, reader_info.firmware_version[0], reader_info.firmware_version[1], reader_info.power))
+print('Frequency info: region %s, %.1f-%.1f MHz' % (reader_info.frequency_band.name, reader_info.get_min_frequency(), reader_info.get_max_frequency()))
 
 #transport.write(get_inventory_288.serialize())
 transport.write(get_inventory_uhfreader18.serialize())
@@ -29,6 +29,6 @@ while inventory_status is None or inventory_status == G2_TAG_INVENTORY_STATUS_MO
     g2_response = G2InventoryResponseFrame18(transport.read_frame())
     inventory_status = g2_response.result_status
     for tag in g2_response.get_tag():
-        print 'Antenna %d: EPC %s, RSSI %s' % (tag.antenna_num, binascii.hexlify(tag.epc), tag.rssi)
+        print('Antenna %d: EPC %s, RSSI %s' % (tag.antenna_num, binascii.hexlify(tag.epc), tag.rssi))
 
 transport.close()

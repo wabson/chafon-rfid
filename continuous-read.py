@@ -37,26 +37,26 @@ def read_tags(reader_addr, appender):
                 if (is_marathon_tag(tag)):
                     boat_num = str(tag.epc.lstrip('\0'))
                     boat_time = str(now)[:12]
-                    print '{0} {1}'.format(boat_num, boat_time)
+                    print('{0} {1}'.format(boat_num, boat_time))
                     if appender is not None:
                         appender.add_row([ boat_num, boat_time, '', '' ])
                 else:
-                    print "Non-marathon tag 0x%s" % (binascii.hexlify(tag.epc))
+                    print("Non-marathon tag 0x%s" % (binascii.hexlify(tag.epc)))
             #print "received %s tags" % (resp.num_tags)
         except KeyboardInterrupt:
             running = False
-            print "KeyboardInterrupt"
+            print("KeyboardInterrupt")
         except socket.error as err:
-            print 'Unable to connect to reader'
+            print('Unable to connect to reader')
             continue
         end = time.time()
-        s.close()
-        #print "elapsed time %.2f" % (end - start)
+        transport.close()
+        #print("elapsed time %.2f" % (end - start))
         try:
             time.sleep(0.05)
         except KeyboardInterrupt:
             running = False
-            print "KeyboardInterrupt"
+            print("KeyboardInterrupt")
 
 if __name__ == "__main__":
 
@@ -73,4 +73,4 @@ if __name__ == "__main__":
             appender_thread.running = False
             appender_thread.join()
     else:
-        print 'Usage: {0} <reader-ip> [<spreadsheet-id>]'.format(sys.argv[0])
+        print('Usage: {0} <reader-ip> [<spreadsheet-id>]'.format(sys.argv[0]))
