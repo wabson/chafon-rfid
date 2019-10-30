@@ -12,7 +12,6 @@ from reader.base import ReaderCommand
 from reader.command import G2_TAG_INVENTORY
 from reader.transport import TcpTransport
 from reader.uhfreader18 import G2InventoryResponseFrame
-from sheets import GoogleSheetAppender
 
 TCP_PORT = 6000
 DELAY = 0.00
@@ -65,6 +64,7 @@ if __name__ == "__main__":
 
         appender_thread = None
         if len(sys.argv) >= 3:
+            from sheets import GoogleSheetAppender
             appender_thread = GoogleSheetAppender(sys.argv[2])
             appender_thread.start()
 
