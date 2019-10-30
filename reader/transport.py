@@ -26,7 +26,7 @@ class BaseTransport(object):
 
     def read_frame(self):
         length_bytes = self.read_bytes(1)
-        frame_length = ord(length_bytes[0])
+        frame_length = length_bytes[0]
         data = length_bytes + self.read_bytes(frame_length)
         return bytearray(data)
 
@@ -40,7 +40,7 @@ class SerialTransport(BaseTransport):
         self.serial = serial.Serial(device, baud_rate, timeout=timeout)
 
     def read_bytes(self, length):
-        return self.serial.read(length)
+        return bytearray(self.serial.read(length))
 
     def write_bytes(self, byte_array):
         self.serial.write(byte_array)
