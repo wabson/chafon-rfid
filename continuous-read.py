@@ -8,8 +8,8 @@ import sys
 
 from datetime import datetime
 
-from reader.base import ReaderCommand
-from reader.command import G2_TAG_INVENTORY
+from reader.base import ReaderCommand, ReaderResponseFrame
+from reader.command import G2_TAG_INVENTORY, CF_SET_RF_POWER
 from reader.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
 from reader.transport import TcpTransport
 from reader.uhfreader18 import G2InventoryResponseFrame
@@ -23,10 +23,17 @@ def is_marathon_tag(tag):
     tag_data = tag.epc
     return len(tag_data) == 4 and all([ chr(tag_byte) in valid_chars for tag_byte in tag_data.lstrip('\0') ])
 
+def set_power(transport, power_db):
+    set_power = ReaderCommand(CF_SET_RF_POWER, data=[power_db])
+    transport.write(set_power.serialize())
+    status = ReaderResponseFrame(transport.read_frame()).result_status
+    return status
+
 def read_tags(reader_addr, appender):
 
     get_inventory_uhfreader18 = ReaderCommand(G2_TAG_INVENTORY)
     transport = TcpTransport(reader_addr=reader_addr, reader_port=TCP_PORT)
+    set_power(transport, 30)
     running = True
     while running:
         start = time.time()
