@@ -15,6 +15,7 @@ from reader.uhfreader18 import G2InventoryResponseFrame
 from sheets import GoogleSheetAppender
 
 TCP_PORT = 6000
+DELAY = 0.00
 
 valid_chars = string.digits + string.ascii_letters
 
@@ -50,13 +51,13 @@ def read_tags(reader_addr, appender):
             print('Unable to connect to reader')
             continue
         end = time.time()
-        transport.close()
         #print("elapsed time %.2f" % (end - start))
         try:
-            time.sleep(0.05)
+            time.sleep(DELAY)
         except KeyboardInterrupt:
             running = False
             print("KeyboardInterrupt")
+    transport.close()
 
 if __name__ == "__main__":
 
