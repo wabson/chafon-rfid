@@ -10,6 +10,7 @@ from datetime import datetime
 
 from reader.base import ReaderCommand
 from reader.command import G2_TAG_INVENTORY
+from reader.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
 from reader.transport import TcpTransport
 from reader.uhfreader18 import G2InventoryResponseFrame
 
@@ -32,17 +33,20 @@ def read_tags(reader_addr, appender):
         try:
             now = datetime.now().time()
             transport.write(get_inventory_uhfreader18.serialize())
-            resp = G2InventoryResponseFrame(transport.read_frame())
-            for tag in resp.get_tag():
-                if (is_marathon_tag(tag)):
-                    boat_num = str(tag.epc.lstrip('\0'))
-                    boat_time = str(now)[:12]
-                    print('{0} {1}'.format(boat_num, boat_time))
-                    if appender is not None:
-                        appender.add_row([ boat_num, boat_time, '', '' ])
-                else:
-                    print("Non-marathon tag 0x%s" % (binascii.hexlify(tag.epc)))
-            #print "received %s tags" % (resp.num_tags)
+            inventory_status = None
+            while inventory_status is None or inventory_status == G2_TAG_INVENTORY_STATUS_MORE_FRAMES:
+                resp = G2InventoryResponseFrame(transport.read_frame())
+                inventory_status = resp.result_status
+                for tag in resp.get_tag():
+                    if (is_marathon_tag(tag)):
+                        boat_num = str(tag.epc.lstrip('\0'))
+                        boat_time = str(now)[:12]
+                        print('{0} {1}'.format(boat_num, boat_time))
+                        if appender is not None:
+                            appender.add_row([ boat_num, boat_time, '', '' ])
+                    else:
+                        print("Non-marathon tag 0x%s" % (binascii.hexlify(tag.epc)))
+                #print "received %s tags" % (resp.num_tags)
         except KeyboardInterrupt:
             running = False
             print("KeyboardInterrupt")
