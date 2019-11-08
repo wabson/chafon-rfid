@@ -14,6 +14,19 @@ class G2InventoryCommand(ReaderCommand):
         super(G2InventoryCommand, self).__init__(G2_TAG_INVENTORY, data=cmd_data)
 
 
+def translate_antenna_num(antenna_code):
+    if antenna_code == 1:
+        return 1
+    elif antenna_code == 2:
+        return 2
+    elif antenna_code == 4:
+        return 3
+    elif antenna_code == 8:
+        return 4
+    else:
+        return None
+
+
 class G2InventoryResponseFrame(ReaderResponseFrame):
 
     tag_prefix_bytes = 0
@@ -26,7 +39,7 @@ class G2InventoryResponseFrame(ReaderResponseFrame):
         self.num_tags = 0
         self.antenna = 0
         if len(self.data) > self.tag_data_prefix_bytes:
-            self.antenna = self.data[0]
+            self.antenna = translate_antenna_num(self.data[0])
             self.num_tags = self.data[1]
 
     def get_tag(self):

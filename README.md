@@ -7,7 +7,8 @@ via TCP/IP or serial and upload the times recorded to a Google Sheet.
 Installation
 ------------
 
-Install Google client and pyserial libs via `pip`
+Optionally, install pyserial (for serial communication) and Google client (for writing results to a spreadsheet) libs,
+via `pip`
 
     pip install --upgrade google-api-python-client oauth2client pyserial
 
@@ -22,7 +23,8 @@ To keep attempting to read tags continuously until Ctrl-C is pressed, run
 `continuous-read.py` providing the IP of the reader and optionally the ID of the 
 Google Sheet
 
-    python continuous-read.py 192.168.1.190 [spreadsheet_id]
+    PYTHONPATH="${PYTHONPATH}:$(pwd)/chafon-rfid" \
+        python examples/continuous-read.py 192.168.1.190 [spreadsheet_id]
 
 A second script `single-read.py` shows how to connect to different types of Chafon 
 reader via serial or TCP/IP and obtain information about the reader as well as to 

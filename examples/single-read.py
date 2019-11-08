@@ -1,11 +1,12 @@
 import binascii
 
-from reader.base import CommandRunner, ReaderCommand, ReaderInfoFrame
-from reader.command import CF_GET_READER_INFO, G2_TAG_INVENTORY
-from reader.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
-from reader.transport import SerialTransport, TcpTransport, MockTransport
-from reader.uhfreader18 import G2InventoryResponseFrame as G2InventoryResponseFrame18
-from reader.uhfreader288m import G2InventoryCommand, G2InventoryResponseFrame as G2InventoryResponseFrame288
+from chafon_rfid.base import CommandRunner, ReaderCommand, ReaderInfoFrame
+from chafon_rfid.command import CF_GET_READER_INFO, G2_TAG_INVENTORY
+from chafon_rfid.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
+from chafon_rfid.transport import TcpTransport, MockTransport
+from chafon_rfid.transport_serial import SerialTransport
+from chafon_rfid.uhfreader18 import G2InventoryResponseFrame as G2InventoryResponseFrame18
+from chafon_rfid.uhfreader288m import G2InventoryCommand, G2InventoryResponseFrame as G2InventoryResponseFrame288
 
 get_reader_info = ReaderCommand(CF_GET_READER_INFO)
 get_inventory_288 = G2InventoryCommand(q_value=4)

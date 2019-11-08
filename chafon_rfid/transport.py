@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import abc
-import serial
 import socket
 
 
@@ -32,21 +31,6 @@ class BaseTransport(object):
 
     def write(self, byte_array):
         self.write_bytes(byte_array)
-
-
-class SerialTransport(BaseTransport):
-
-    def __init__(self, device='/dev/ttyUSB0', baud_rate=57600, timeout=5):
-        self.serial = serial.Serial(device, baud_rate, timeout=timeout)
-
-    def read_bytes(self, length):
-        return bytearray(self.serial.read(length))
-
-    def write_bytes(self, byte_array):
-        self.serial.write(byte_array)
-
-    def close(self):
-        self.serial.close()
 
 
 class TcpTransport(BaseTransport):

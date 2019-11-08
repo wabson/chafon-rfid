@@ -8,11 +8,11 @@ import sys
 
 from datetime import datetime
 
-from reader.base import ReaderCommand, ReaderResponseFrame
-from reader.command import G2_TAG_INVENTORY, CF_SET_RF_POWER
-from reader.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
-from reader.transport import TcpTransport
-from reader.uhfreader18 import G2InventoryResponseFrame
+from chafon_rfid.base import ReaderCommand, ReaderResponseFrame
+from chafon_rfid.command import G2_TAG_INVENTORY, CF_SET_RF_POWER, CF_SET_WORK_MODE_18, CF_SET_WORK_MODE_288M
+from chafon_rfid.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
+from chafon_rfid.transport import TcpTransport
+from chafon_rfid.uhfreader18 import G2InventoryResponseFrame
 
 TCP_PORT = 6000
 DELAY = 0.00
@@ -23,11 +23,13 @@ def is_marathon_tag(tag):
     tag_data = tag.epc
     return len(tag_data) == 4 and all([ chr(tag_byte) in valid_chars for tag_byte in tag_data.lstrip('\0') ])
 
+
 def set_power(transport, power_db):
     set_power = ReaderCommand(CF_SET_RF_POWER, data=[power_db])
     transport.write(set_power.serialize())
     status = ReaderResponseFrame(transport.read_frame()).result_status
     return status
+
 
 def read_tags(reader_addr, appender):
 
@@ -75,7 +77,7 @@ if __name__ == "__main__":
 
         appender_thread = None
         if len(sys.argv) >= 3:
-            from sheets import GoogleSheetAppender
+            from .sheets import GoogleSheetAppender
             appender_thread = GoogleSheetAppender(sys.argv[2])
             appender_thread.start()
 

@@ -1,3 +1,11 @@
 **/*.pyc
+/*.egg-info
+.coverage
+.idea
+.pytest_cache
+/build
+/dist
 google-credentials.json
 google-token.json
+htmlcov
+venv

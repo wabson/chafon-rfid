@@ -1,4 +1,4 @@
-from checksum import checksum
+from .checksum import checksum
 from enum import Enum
 
 
