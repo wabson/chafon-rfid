@@ -10,8 +10,11 @@ via TCP/IP or serial and upload the times recorded to a Google Sheet.
 Installation
 ------------
 
-Optionally, install pyserial (for serial communication) and Google client (for writing results to a spreadsheet) libs,
-via `pip`
+To install the package into your own project, use `pip`
+
+    pip install wabson.chafon-rfid
+
+Optionally, install pyserial (for serial communication) and Google client (for writing results to a spreadsheet) libs
 
     pip install --upgrade google-api-python-client oauth2client pyserial
 
@@ -21,10 +24,6 @@ to allow times to be added to a spreadsheet (optional)
 
 Usage
 -----
-
-to install the package into your own project use `pip`
-
-    pip install wabson.chafon-rfid
 
 Examples of how to to use the provided modules are provided in the `examples` directory.
 
