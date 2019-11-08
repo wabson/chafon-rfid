@@ -19,6 +19,12 @@ to allow times to be added to a spreadsheet (optional)
 Usage
 -----
 
+to install the package into your own project use `pip`
+
+    pip install wabson.chafon-rfid
+
+Examples of how to to use the provided modules are provided in the `examples` directory.
+
 To keep attempting to read tags continuously until Ctrl-C is pressed, run
 `continuous-read.py` providing the IP of the reader and optionally the ID of the 
 Google Sheet
