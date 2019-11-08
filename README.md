@@ -1,6 +1,9 @@
 Chafon RFID reader
 ==================
 
+[![Build Status](https://travis-ci.org/wabson/chafon-rfid.svg?branch=master)](https://travis-ci.org/wabson/chafon-rfid)
+[![codecov](https://codecov.io/gh/wabson/chafon-rfid/branch/master/graph/badge.svg)](https://codecov.io/gh/wabson/chafon-rfid)
+
 This project provides a script which can be used to connect to a Chafon RFID reader
 via TCP/IP or serial and upload the times recorded to a Google Sheet.
 
