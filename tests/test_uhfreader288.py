@@ -1,6 +1,6 @@
 from chafon_rfid.base import CommandRunner, ReaderCommand
 from chafon_rfid.transport import MockTransport
-from chafon_rfid.uhfreader288m import G2InventoryResponse, G2InventoryResponseFrame
+from chafon_rfid.uhfreader288m import G2InventoryCommand, G2InventoryResponse, G2InventoryResponseFrame
 
 from chafon_rfid.command import CF_GET_READER_INFO, G2_TAG_INVENTORY
 
@@ -65,3 +65,15 @@ def test_multiple_tags():
     assert tag2.epc == bytearray.fromhex('000000000000000000000314')
     assert tag2.rssi == 0x6c
     assert tag2.antenna_num == 1
+
+
+def test_inventory_command_defaults():
+
+    command = G2InventoryCommand()
+    assert command.data == list(bytearray.fromhex('0f0001000000008014'))
+
+
+def test_inventory_command():
+
+    command = G2InventoryCommand(q_value=2, session=1, mask_source=2, target=1, scan_time=3)
+    assert command.data == list(bytearray.fromhex('020102000000018003'))
