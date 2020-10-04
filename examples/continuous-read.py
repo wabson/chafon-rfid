@@ -3,6 +3,7 @@
 import socket
 import string
 import time
+import statistics
 import sys
 
 from datetime import datetime
@@ -64,6 +65,7 @@ def read_tags(reader_addr, appender):
         sys.exit(1)
 
     running = True
+    response_times = []
     while running:
         start = time.time()
         try:
@@ -90,12 +92,14 @@ def read_tags(reader_addr, appender):
             print('Unable to connect to reader')
             continue
         end = time.time()
-        #print("elapsed time %.2f" % (end - start))
+        response_times.append(end - start)
+        # print("elapsed time %.2f" % (end - start))
         try:
             time.sleep(DELAY)
         except KeyboardInterrupt:
             running = False
             print("KeyboardInterrupt")
+    print('Performed {} inventories, average time {:.3f}'.format(len(response_times), statistics.mean(response_times)))
     transport.close()
 
 
