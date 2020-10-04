@@ -64,8 +64,11 @@ def read_tags(reader_addr, appender):
         print('Unknown reader type {}'.format(reader_type))
         sys.exit(1)
 
+    verbose = False
     running = True
     response_times = []
+    tag_counts = {}
+    rssi_values = {}
     while running:
         start = time.time()
         try:
@@ -76,15 +79,24 @@ def read_tags(reader_addr, appender):
                 resp = frame_type(transport.read_frame())
                 inventory_status = resp.result_status
                 for tag in resp.get_tag():
+                    tag_id = tag.epc.hex()
+                    tag_counts[tag_id] = tag_counts.get(tag_id, 0) + 1
                     if is_marathon_tag(tag):
                         boat_num = (tag.epc.lstrip(bytearray([0]))).decode('ascii')
                         boat_time = str(now)[:12]
-                        print('{0} {1}'.format(boat_num, boat_time))
+                        rssi = tag.rssi
+                        if verbose:
+                            print('{0} {1} {2}'.format(boat_num, boat_time, rssi))
                         if appender is not None:
                             appender.add_row([boat_num, boat_time, '', ''])
                     else:
-                        print("Non-marathon tag 0x%s" % (tag.epc.hex()))
-                #print "received %s tags" % (resp.num_tags)
+                        if verbose:
+                            print("Non-marathon tag 0x%s" % (tag.epc.hex()))
+                    if tag.rssi is not None:
+                        if tag_id not in rssi_values:
+                            rssi_values[tag_id] = []
+                        rssi_values[tag_id].append(tag.rssi)
+                    # print "received %s tags" % (resp.num_tags)
         except KeyboardInterrupt:
             running = False
             print("KeyboardInterrupt")
@@ -99,7 +111,12 @@ def read_tags(reader_addr, appender):
         except KeyboardInterrupt:
             running = False
             print("KeyboardInterrupt")
+    print('Found {} tags:'.format(len(tag_counts)))
+    for tag_id, count in tag_counts.items():
+        print('  {}: {} times{}'.format(tag_id, count, rssi_values and ', average RSSI: %.2f' % (statistics.mean(rssi_values[tag_id]),) or ''))
     print('Performed {} inventories, average time {:.3f}'.format(len(response_times), statistics.mean(response_times)))
+    if len(rssi_values) > 0:
+        print('Average RSSI {:.2f} dBm'.format(statistics.mean(item for sublist in rssi_values.values() for item in sublist)))
     transport.close()
 
 
