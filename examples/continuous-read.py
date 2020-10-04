@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import binascii
 import socket
 import string
 import time
@@ -21,7 +20,7 @@ valid_chars = string.digits + string.ascii_letters
 
 def is_marathon_tag(tag):
     tag_data = tag.epc
-    return len(tag_data) == 4 and all([ chr(tag_byte) in valid_chars for tag_byte in tag_data.lstrip('\0') ])
+    return len(tag_data) == 4 and all([chr(tag_byte) in valid_chars for tag_byte in tag_data.lstrip(bytearray([0]))])
 
 
 def set_power(transport, power_db):
@@ -47,19 +46,19 @@ def read_tags(reader_addr, appender):
                 resp = G2InventoryResponseFrame(transport.read_frame())
                 inventory_status = resp.result_status
                 for tag in resp.get_tag():
-                    if (is_marathon_tag(tag)):
-                        boat_num = str(tag.epc.lstrip('\0'))
+                    if is_marathon_tag(tag):
+                        boat_num = (tag.epc.lstrip(bytearray([0]))).decode('ascii')
                         boat_time = str(now)[:12]
                         print('{0} {1}'.format(boat_num, boat_time))
                         if appender is not None:
                             appender.add_row([ boat_num, boat_time, '', '' ])
                     else:
-                        print("Non-marathon tag 0x%s" % (binascii.hexlify(tag.epc)))
+                        print("Non-marathon tag 0x%s" % (tag.epc.hex()))
                 #print "received %s tags" % (resp.num_tags)
         except KeyboardInterrupt:
             running = False
             print("KeyboardInterrupt")
-        except socket.error as err:
+        except socket.error:
             print('Unable to connect to reader')
             continue
         end = time.time()
@@ -77,7 +76,7 @@ if __name__ == "__main__":
 
         appender_thread = None
         if len(sys.argv) >= 3:
-            from .sheets import GoogleSheetAppender
+            from sheets import GoogleSheetAppender
             appender_thread = GoogleSheetAppender(sys.argv[2])
             appender_thread.start()
 

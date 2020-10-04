@@ -1,11 +1,16 @@
+import os.path
+import pickle
 import socket
 import threading
+import time
 
 from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+
 from googleapiclient.errors import HttpError
-from httplib import HTTPException
+from http.client import HTTPException
 from httplib2 import Http, ServerNotFoundError
-from oauth2client import file, client, tools
 
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
 TIMES_RANGE_NAME = 'Chip Finishes!A1:D1'
@@ -33,13 +38,27 @@ class GoogleSheetAppender(threading.Thread):
         if len(spreadsheet_values) == 0:
             return
 
-        store = file.Storage('google-token.json')
-        creds = store.get()
-        if not creds or creds.invalid:
-            flow = client.flow_from_clientsecrets('google-credentials.json', SCOPES)
-            creds = tools.run_flow(flow, store)
+        creds = None
+        # The file token.pickle stores the user's access and refresh tokens, and is
+        # created automatically when the authorization flow completes for the first
+        # time.
+        if os.path.exists('token.pickle'):
+            with open('token.pickle', 'rb') as token:
+                creds = pickle.load(token)
+        # If there are no (valid) credentials available, let the user log in.
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    'credentials.json', SCOPES)
+                creds = flow.run_console()
+            # Save the credentials for the next run
+            with open('token.pickle', 'wb') as token:
+                pickle.dump(creds, token)
+
         try:
-            service = build('sheets', 'v4', http=creds.authorize(Http()))
+            service = build('sheets', 'v4', credentials=creds)
             sheet = service.spreadsheets()
             value_input_option = 'USER_ENTERED'
             insert_data_option = 'INSERT_ROWS'
@@ -48,15 +67,15 @@ class GoogleSheetAppender(threading.Thread):
                     'majorDimension': 'ROWS',
                     'values': spreadsheet_values
                     }
-            request = service.spreadsheets().values().append(spreadsheetId=self.__spreadsheet_id, range=TIMES_RANGE_NAME, valueInputOption=value_input_option, insertDataOption=insert_data_option, body=value_range_body)
+            request = sheet.values().append(spreadsheetId=self.__spreadsheet_id, range=TIMES_RANGE_NAME, valueInputOption=value_input_option, insertDataOption=insert_data_option, body=value_range_body)
             response = request.execute()
             rows_added = response.get('updates').get('updatedRows')
             self.__commit_count += rows_added
             print('{0} rows updated'.format(rows_added))
         except HttpError as err:
             if err.resp.status in [403, 404, 500, 503]:
-                print 'Error appending spreadsheet values: %s' % (err.resp.status,)
+                print('Error appending spreadsheet values: %s' % (err.resp.status,))
             else:
                 raise
         except (HTTPException, ServerNotFoundError, socket.error) as err:
-            print 'Could not append spreadsheet values'
+            print('Could not append spreadsheet values')
