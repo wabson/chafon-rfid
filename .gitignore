@@ -9,3 +9,5 @@ google-credentials.json
 google-token.json
 htmlcov
 venv
+credentials.json
+token.pickle

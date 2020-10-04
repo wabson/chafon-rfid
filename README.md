@@ -16,7 +16,7 @@ To install the package into your own project, use `pip`
 
 Optionally, install pyserial (for serial communication) and Google client (for writing results to a spreadsheet) libs
 
-    pip install --upgrade google-api-python-client oauth2client pyserial
+    pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib pyserial
 
 Follow the steps in the [Google Sheets API Python
 Quickstart](https://developers.google.com/sheets/api/quickstart/python),
