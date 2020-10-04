@@ -27,11 +27,22 @@ def is_marathon_tag(tag):
     return len(tag_data) == 4 and all([chr(tag_byte) in valid_chars for tag_byte in tag_data.lstrip(bytearray([0]))])
 
 
-def set_power(transport, power_db):
-    set_power = ReaderCommand(CF_SET_RF_POWER, data=[power_db])
-    transport.write(set_power.serialize())
+def run_command(transport, command):
+    transport.write(command.serialize())
     status = ReaderResponseFrame(transport.read_frame()).result_status
     return status
+
+
+def set_power(transport, power_db):
+    return run_command(transport, ReaderCommand(CF_SET_RF_POWER, data=[power_db]))
+
+
+def set_answer_mode_reader_18(transport):
+    return run_command(transport, ReaderCommand(CF_SET_WORK_MODE_18, data=[0]*6))
+
+
+def set_answer_mode_reader_288m(transport):
+    return run_command(transport, ReaderCommand(CF_SET_WORK_MODE_288M, data=[0]))
 
 
 def get_reader_type(runner):
@@ -55,9 +66,11 @@ def read_tags(reader_addr, appender):
     runner = CommandRunner(transport)
     reader_type = get_reader_type(runner)
     if reader_type == ReaderType.UHFReader18:
+        set_answer_mode_reader_18(transport)
         get_inventory_cmd = ReaderCommand(G2_TAG_INVENTORY)
         frame_type = G2InventoryResponseFrame18
     elif reader_type == ReaderType.UHFReader288M:
+        set_answer_mode_reader_288m(transport)
         get_inventory_cmd = G2InventoryCommand(q_value=4, antenna=0x80)
         frame_type = G2InventoryResponseFrame
     else:
