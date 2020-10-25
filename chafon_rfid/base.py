@@ -108,6 +108,24 @@ class ReaderInfoFrame(ReaderResponseFrame):
     def get_regional_frequency(self, fnum):
         if self.frequency_band is ReaderFrequencyBand.EU:
             return 865.1 + fnum * 0.2
+        elif self.frequency_band is ReaderFrequencyBand.China2:
+            return 920.125 + fnum * 0.25
+        elif self.frequency_band is ReaderFrequencyBand.US:
+            return 902.75 + fnum * 0.5
+        elif self.frequency_band is ReaderFrequencyBand.Korea:
+            return 917.1 + fnum * 0.2
+        elif self.frequency_band is ReaderFrequencyBand.Ukraine:
+            return 868.0 + fnum * 0.1
+        elif self.frequency_band is ReaderFrequencyBand.Peru:
+            return 916.2 + fnum * 0.9
+        elif self.frequency_band is ReaderFrequencyBand.China1:
+            return 840.125 + fnum * 0.25
+        elif self.frequency_band is ReaderFrequencyBand.EU3:
+            return 865.7 + fnum * 0.6
+        elif self.frequency_band is ReaderFrequencyBand.US3:
+            return 902 + fnum * 0.5
+        elif self.frequency_band is ReaderFrequencyBand.Taiwan:
+            return 922.25 + fnum * 0.5
         else:
             return fnum
 

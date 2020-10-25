@@ -17,9 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Support for Python2
+
 ### Fixed
 
+- Print frequencies correctly for non-EU countries (#4)
 - Usage info in `continuous-read.py`
 - Errors in `continuous-read.py` when no tags have been read
 
-- Support for Python2
