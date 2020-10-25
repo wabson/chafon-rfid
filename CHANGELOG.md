@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New example script `get_reader_info.py`
 - Support for CF-MU904 module as requested by @DylanDonkersgoed in #2
 - Support for Python3
 
