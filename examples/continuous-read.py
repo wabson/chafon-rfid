@@ -9,7 +9,10 @@ import sys
 from datetime import datetime
 
 from chafon_rfid.base import CommandRunner, ReaderCommand, ReaderInfoFrame, ReaderResponseFrame, ReaderType
-from chafon_rfid.command import G2_TAG_INVENTORY, CF_GET_READER_INFO, CF_SET_RF_POWER, CF_SET_WORK_MODE_18, CF_SET_WORK_MODE_288M
+from chafon_rfid.command import (
+    G2_TAG_INVENTORY, CF_GET_READER_INFO, CF_SET_BUZZER_ENABLED, CF_SET_RF_POWER,
+    CF_SET_WORK_MODE_18, CF_SET_WORK_MODE_288M,
+)
 from chafon_rfid.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
 from chafon_rfid.transport import TcpTransport
 from chafon_rfid.transport_serial import SerialTransport
@@ -37,6 +40,10 @@ def set_power(transport, power_db):
     return run_command(transport, ReaderCommand(CF_SET_RF_POWER, data=[power_db]))
 
 
+def set_buzzer_enabled(transport, buzzer_enabled):
+    return run_command(transport, ReaderCommand(CF_SET_BUZZER_ENABLED, data=[buzzer_enabled and 1 or 0]))
+
+
 def set_answer_mode_reader_18(transport):
     return run_command(transport, ReaderCommand(CF_SET_WORK_MODE_18, data=[0]*6))
 
@@ -60,21 +67,31 @@ def read_tags(reader_addr, appender):
     if reader_addr.startswith('/') or reader_addr.startswith('COM'):
         transport = SerialTransport(device=reader_addr)
     else:
-        transport = TcpTransport(reader_addr)
-    set_power(transport, 27)
+        transport = TcpTransport(reader_addr, reader_port=TCP_PORT)
 
     runner = CommandRunner(transport)
-    reader_type = get_reader_type(runner)
-    if reader_type == ReaderType.UHFReader18:
-        set_answer_mode_reader_18(transport)
-        get_inventory_cmd = ReaderCommand(G2_TAG_INVENTORY)
-        frame_type = G2InventoryResponseFrame18
-    elif reader_type == ReaderType.UHFReader288M:
-        set_answer_mode_reader_288m(transport)
-        get_inventory_cmd = G2InventoryCommand(q_value=4, antenna=0x80)
-        frame_type = G2InventoryResponseFrame
-    else:
-        print('Unknown reader type {}'.format(reader_type))
+    try:
+        reader_type = get_reader_type(runner)
+        if reader_type == ReaderType.UHFReader18:
+            set_answer_mode_reader_18(transport)
+            get_inventory_cmd = ReaderCommand(G2_TAG_INVENTORY)
+            frame_type = G2InventoryResponseFrame18
+            set_power(transport, 27)
+        elif reader_type == ReaderType.UHFReader288M:
+            set_answer_mode_reader_288m(transport)
+            get_inventory_cmd = G2InventoryCommand(q_value=4, antenna=0x80)
+            frame_type = G2InventoryResponseFrame
+            set_power(transport, 27)
+        elif reader_type == ReaderType.UHFReader86_1:
+            get_inventory_cmd = G2InventoryCommand(q_value=4, antenna=0x80)
+            frame_type = G2InventoryResponseFrame
+            set_power(transport, 26)
+            set_buzzer_enabled(transport, True)
+        else:
+            print('Unsupported reader type: {}'.format(reader_type))
+            sys.exit(1)
+    except ValueError as e:
+        print('Unknown reader type: {}'.format(e))
         sys.exit(1)
 
     verbose = False
