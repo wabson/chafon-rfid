@@ -141,12 +141,15 @@ def read_tags(reader_addr, appender):
         except KeyboardInterrupt:
             running = False
             print("KeyboardInterrupt")
-    print('Found {} tags:'.format(len(tag_counts)))
-    for tag_id, count in tag_counts.items():
-        print('  {}: {} times{}'.format(tag_id, count, rssi_values and ', average RSSI: %.2f' % (statistics.mean(rssi_values[tag_id]),) or ''))
-    print('Performed {} inventories, average time {:.3f}'.format(len(response_times), statistics.mean(response_times)))
-    if len(rssi_values) > 0:
-        print('Average RSSI {:.2f} dBm'.format(statistics.mean(item for sublist in rssi_values.values() for item in sublist)))
+    if len(tag_counts) > 0:
+        print('Found {} tags:'.format(len(tag_counts)))
+        for tag_id, count in tag_counts.items():
+            print('  {}: {} times{}'.format(tag_id, count, rssi_values and ', average RSSI: %.2f' % (statistics.mean(rssi_values[tag_id]),) or ''))
+        print('Performed {} inventories, average time {:.3f}'.format(len(response_times), statistics.mean(response_times)))
+        if len(rssi_values) > 0:
+            print('Average RSSI {:.2f} dBm'.format(statistics.mean(item for sublist in rssi_values.values() for item in sublist)))
+    else:
+        print('No tags found')
     transport.close()
 
 
