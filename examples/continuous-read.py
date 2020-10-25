@@ -169,4 +169,4 @@ if __name__ == "__main__":
             appender_thread.running = False
             appender_thread.join()
     else:
-        print('Usage: {0} <reader-ip> [<spreadsheet-id>]'.format(sys.argv[0]))
+        print('Usage: {0} <reader-address> [<spreadsheet-id>]'.format(sys.argv[0]))

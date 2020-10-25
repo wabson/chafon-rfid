@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Usage info in `continuous-read.py`
 - Errors in `continuous-read.py` when no tags have been read
 
 - Support for Python2
