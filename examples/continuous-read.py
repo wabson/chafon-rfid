@@ -86,7 +86,7 @@ def read_tags(reader_addr, appender):
             get_inventory_cmd = G2InventoryCommand(q_value=4, antenna=0x80)
             frame_type = G2InventoryResponseFrame
             set_power(transport, 27)
-        elif reader_type == ReaderType.UHFReader86_1:
+        elif reader_type in (ReaderType.UHFReader86, ReaderType.UHFReader86_1):
             get_inventory_cmd = G2InventoryCommand(q_value=4, antenna=0x80)
             frame_type = G2InventoryResponseFrame
             set_power(transport, 26)
