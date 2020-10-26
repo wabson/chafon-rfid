@@ -1,5 +1,20 @@
 #!/usr/bin/env python
 
+# More complex but comprehensive example
+#
+# Repeatedly performs tag inventories until Ctrl-C is pressed, supports a range of different readers
+#
+# This script takes one or two parameters, the first being the serial or IP address of the reader,
+# the second parameter if supplied should be the ID of a Google Sheet in which to log the tags
+# with times.
+#
+#     PYTHONPATH="${PYTHONPATH}:$(pwd)/chafon-rfid" \
+#       python examples/continuous-read.py /dev/ttyUSB0 [spreadsheet_id]
+#
+# Note: Before running with a spreadsheet you must install the Google Client and follow the setup
+# steps in the [Google Sheets API Python
+# Quickstart](https://developers.google.com/sheets/api/quickstart/python)
+
 import socket
 import string
 import time

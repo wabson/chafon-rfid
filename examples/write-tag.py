@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Basic example to write a single tag with an EPC code, which must be a multiple of two bytes
+
 import sys
 
 from math import floor
