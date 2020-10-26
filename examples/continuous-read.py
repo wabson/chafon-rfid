@@ -87,6 +87,10 @@ def read_tags(reader_addr, appender):
             frame_type = G2InventoryResponseFrame
             set_power(transport, 26)
             set_buzzer_enabled(transport, True)
+        elif reader_type in (ReaderType.RRU9803M, ReaderType.RRU9803M_1):
+            get_inventory_cmd = ReaderCommand(G2_TAG_INVENTORY)
+            frame_type = G2InventoryResponseFrame18
+            set_power(transport, 13)
         else:
             print('Unsupported reader type: {}'.format(reader_type))
             sys.exit(1)
