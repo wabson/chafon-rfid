@@ -81,7 +81,7 @@ def read_tags(reader_addr, appender):
             get_inventory_cmd = ReaderCommand(G2_TAG_INVENTORY)
             frame_type = G2InventoryResponseFrame18
             set_power(transport, 27)
-        elif reader_type == ReaderType.UHFReader288M:
+        elif reader_type in (ReaderType.UHFReader288M, ReaderType.UHFReader288MP):
             set_answer_mode_reader_288m(transport)
             get_inventory_cmd = G2InventoryCommand(q_value=4, antenna=0x80)
             frame_type = G2InventoryResponseFrame
