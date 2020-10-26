@@ -11,7 +11,7 @@ from datetime import datetime
 from chafon_rfid.base import CommandRunner, ReaderCommand, ReaderInfoFrame, ReaderResponseFrame, ReaderType
 from chafon_rfid.command import (
     G2_TAG_INVENTORY, CF_GET_READER_INFO, CF_SET_BUZZER_ENABLED, CF_SET_RF_POWER,
-    CF_SET_WORK_MODE_18, CF_SET_WORK_MODE_288M,
+    CF_SET_ACCOUSTO_OPTIC_TIMES, CF_SET_WORK_MODE_18, CF_SET_WORK_MODE_288M,
 )
 from chafon_rfid.response import G2_TAG_INVENTORY_STATUS_MORE_FRAMES
 from chafon_rfid.transport import TcpTransport
@@ -42,6 +42,10 @@ def set_power(transport, power_db):
 
 def set_buzzer_enabled(transport, buzzer_enabled):
     return run_command(transport, ReaderCommand(CF_SET_BUZZER_ENABLED, data=[buzzer_enabled and 1 or 0]))
+
+
+def set_accousto_optic_times(transport, active_time, silent_time, times):
+    return run_command(transport, ReaderCommand(CF_SET_ACCOUSTO_OPTIC_TIMES, data=[active_time, silent_time, times]))
 
 
 def set_answer_mode_reader_18(transport):
