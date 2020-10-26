@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='wabson.chafon-rfid',
-    version='0.0.5',
+    version='0.1.0',
     author='Will Abson',
     author_email='will@wabson.org',
     description='Read RFID data from Chafon UHF readers',
