@@ -85,6 +85,7 @@ class ReaderType(Enum):
     UHFReader86_1 = 0x10 # CF-MU903/CF-MU904 (actual)
     RRU9883M      = 0x16 # CF-MU902
     UHFReader288MP = 0x20 # CF-MU804
+    UHFReader6401 = 0x8b # CF-RU6401
 
 
 class ReaderInfoFrame(ReaderResponseFrame):
