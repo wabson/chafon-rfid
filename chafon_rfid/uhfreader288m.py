@@ -26,11 +26,16 @@ class G2InventoryCommand(ReaderCommand):
 
     def __init__(self, addr=0xFF, q_value=15, deliver_statistics=0, strategy=0, fast_id=0,
                  session=G2_TAG_INVENTORY_PARAM_SESSION_S0, mask_source=G2_TAG_INVENTORY_PARAM_MEMORY_EPC,
-                 target=G2_TAG_INVENTORY_PARAM_TARGET_A, antenna=G2_TAG_INVENTORY_PARAM_ANTENNA_1, scan_time=0x14):
+                 target=G2_TAG_INVENTORY_PARAM_TARGET_A, antenna=G2_TAG_INVENTORY_PARAM_ANTENNA_1, scan_time=0x14,
+                 adrTid=0, lenTid=6):
         # TODO check q_value in range 0 ~ 15, session 0 ~ 3
         mask_data = [0x00, 0x00, 0x00]
         q_value_byte = (deliver_statistics << 7) + (strategy << 6) + (fast_id << 5) + q_value
-        cmd_data = [q_value_byte, session, mask_source] + mask_data + [target, antenna, scan_time]
+        if mask_source == G2_TAG_INVENTORY_PARAM_MEMORY_TID:
+            cmd_data = [q_value_byte, session, mask_source] + mask_data + [adrTid, lenTid] + [target, antenna,
+                                                                                              scan_time]
+        else:
+            cmd_data = [q_value_byte, session, mask_source] + mask_data + [target, antenna, scan_time]
         super(G2InventoryCommand, self).__init__(G2_TAG_INVENTORY, addr, data=cmd_data)
 
 
