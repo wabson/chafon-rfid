@@ -77,14 +77,16 @@ class ReaderFrequencyBand(Enum):
 
 class ReaderType(Enum):
 
-    RRU9803M      = 0x03 # CF-RU5102 (desktop USB reader/writer, as specified)
-    RRU9803M_1    = 0x08 # CF-RU5102 (desktop USB reader/writer, actual)
-    UHFReader18   = 0x09
-    UHFReader288M = 0x0c
-    UHFReader86   = 0x0f # CF-MU903/CF-MU904 (as documented)
-    UHFReader86_1 = 0x10 # CF-MU903/CF-MU904 (actual)
-    RRU9883M      = 0x16 # CF-MU902
+    RRU9803M       = 0x03 # CF-RU5102 (desktop USB reader/writer, as specified)
+    RRU9803M_1     = 0x08 # CF-RU5102 (desktop USB reader/writer, actual)
+    UHFReader18    = 0x09
+    UHFReader288M  = 0x0c
+    UHFReader86    = 0x0f # CF-MU903/CF-MU904 (as documented)
+    UHFReader86_1  = 0x10 # CF-MU903/CF-MU904 (actual)
+    RRU9883M       = 0x16 # CF-MU902
     UHFReader288MP = 0x20 # CF-MU804
+    UHFReaderE710  = 0x75 # VF-E71F, CF-E710, CF-E714, CF-E718. Only confirmed working on CF-E714.
+
 
 
 class ReaderInfoFrame(ReaderResponseFrame):
