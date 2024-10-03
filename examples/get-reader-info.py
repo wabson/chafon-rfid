@@ -27,6 +27,7 @@ def print_reader_info(reader_addr):
     else:
         transport = TcpTransport(reader_addr, reader_port=TCP_PORT)
 
+    transport.connect()
     runner = CommandRunner(transport)
     try:
         reader_info = get_reader_info(runner)

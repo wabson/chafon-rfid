@@ -12,6 +12,9 @@ class BaseTransport(object):
     def __init__(self):
         raise NotImplementedError
 
+    def connect(self):
+        pass
+
     @abc.abstractmethod
     def read_bytes(self, length):
         raise NotImplementedError
@@ -31,6 +34,9 @@ class BaseTransport(object):
 
     def write(self, byte_array):
         self.write_bytes(byte_array)
+
+    def close(self):
+        pass
 
 
 class TcpTransport(BaseTransport):
