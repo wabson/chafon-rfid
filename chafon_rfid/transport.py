@@ -28,6 +28,8 @@ class BaseTransport(object):
 
     def read_frame(self):
         length_bytes = self.read_bytes(1)
+        if len(length_bytes) == 0:
+            raise ValueError('No frame length found')
         frame_length = length_bytes[0]
         data = length_bytes + self.read_bytes(frame_length)
         return bytearray(data)
