@@ -40,6 +40,9 @@ class BaseTransport(object):
     def close(self):
         pass
 
+    def destroy(self):
+        pass
+
 
 class TcpTransport(BaseTransport):
 

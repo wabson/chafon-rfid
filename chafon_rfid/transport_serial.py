@@ -14,5 +14,6 @@ class SerialTransport(BaseTransport):
     def write_bytes(self, byte_array):
         self.serial.write(byte_array)
 
-    def close(self):
+    def destroy(self):
         self.serial.close()
+        self.serial = None
