@@ -14,9 +14,7 @@ from chafon_rfid.transport_serial import SerialTransport
 TCP_PORT = 6000
 
 
-def write_epc(runner, value):
-    if len(value) % 2 > 0:
-        raise ValueError('Value must be a whole number of words, i.e. multiple of two bytes')
+def write_epc_bytes(runner, value):
     password = [0, 0, 0, 0]
     write_data = [floor(len(value) / 2)] + password + value
     write_cmd = ReaderCommand(G2_WRITE_EPC, data=write_data)
@@ -24,8 +22,48 @@ def write_epc(runner, value):
     return write_resp.result_status
 
 
-def write_tag_value(reader_addr, tag_value):
+def write_tag_value(runner, tag_value):
+    print(tag_value)
+    ascii_byes = list(tag_value.encode('ascii'))
+    if len(ascii_byes) % 2 > 0:
+        ascii_byes.insert(0, 0)
+    write_tag_status = write_epc_bytes(runner, ascii_byes)
+    if write_tag_status == 0:
+        print('Tag written successfully')
+        return True
+    elif write_tag_status == 0xFA:
+        print('Error: Poor communication, try repositioning the tag')
+        return False
+    elif write_tag_status == 0xFB:
+        print('Error: No tags found, is a tag in place?')
+        return False
+    return None
 
+
+def write_tag_text_or_range(runner, text_value):
+    if ':' in text_value:
+        range_parts = text_value.split(':')
+        start_number = int(range_parts[0])
+        end_number = int(range_parts[1])
+        for tag_number in range(start_number, end_number + 1):
+            tag_text = str(tag_number)
+            print('Write EPC data: {}'.format(tag_text))
+            while True:
+                input('Press Enter to continue')
+                write_result = write_tag_value(runner, tag_text)
+                if write_result is True:
+                    break
+    else:
+        write_tag_value(runner, text_value)
+
+
+if __name__ == "__main__":
+
+    if len(sys.argv) < 3:
+        print('Usage: {0} <reader-address> <epc-text>'.format(sys.argv[0]))
+        sys.exit(1)
+
+    reader_addr = sys.argv[1]
     # transport = TcpTransport(reader_addr=reader_addr, reader_port=TCP_PORT)
     # transport = SerialTransport(device='/dev/ttyS0')
     # transport = SerialTransport(device='/dev/ttyAMA0')
@@ -36,24 +74,8 @@ def write_tag_value(reader_addr, tag_value):
         transport = TcpTransport(reader_addr, reader_port=TCP_PORT)
 
     runner = CommandRunner(transport)
-    try:
-        write_tag_status = write_epc(runner, tag_value)
-        if write_tag_status == 0:
-            print('Tag written successfully')
-        elif write_tag_status == 0xFA:
-            print('Error: Poor communication, try repositioning the tag')
-        elif write_tag_status == 0xFB:
-            print('Error: No tags found, is a tag in place?')
-    except ValueError as e:
-        print('Could not write value: {}'.format(e))
-        sys.exit(1)
+
+    for tag_value in sys.argv[2:]:
+        write_tag_text_or_range(runner, tag_value)
 
     transport.close()
-
-
-if __name__ == "__main__":
-
-    if len(sys.argv) >= 2:
-        write_tag_value(sys.argv[1], list('1234'.encode('ascii')))
-    else:
-        print('Usage: {0} <reader-address>'.format(sys.argv[0]))
