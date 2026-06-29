@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='wabson.chafon-rfid',
-    version='0.1.0',
+    version='1.0.0',
     author='Will Abson',
     author_email='will@wabson.org',
     description='Read RFID data from Chafon UHF readers',
@@ -16,13 +16,14 @@ setuptools.setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.4',
+    python_requires='>=3.11',
     extras_require={
         'test': []
     },

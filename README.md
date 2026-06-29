@@ -32,7 +32,7 @@ responses.
 Requirements
 ------------
 
-This module requires *Python 3.4+* but should work under any OS.
+This module requires *Python 3.11+* but should work under any OS.
 
 For serial communication using the built-in transport class, [pyserial](https://pyserial.readthedocs.io/) is required. Other implementations are possible for MicroPython/CircuitPython environments.
 
