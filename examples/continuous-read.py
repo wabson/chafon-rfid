@@ -15,6 +15,7 @@
 # steps in the [Google Sheets API Python
 # Quickstart](https://developers.google.com/sheets/api/quickstart/python)
 
+import argparse
 import socket
 import string
 import time
@@ -77,16 +78,16 @@ def get_reader_type(runner):
     return reader_info.type
 
 
-def read_tags(reader_addr, appender):
+def read_tags(reader_addr, appender, tcp_port=TCP_PORT, baud_rate=57600):
 
     # transport = TcpTransport(reader_addr=reader_addr, reader_port=TCP_PORT)
     # transport = SerialTransport(device='/dev/ttyS0')
     # transport = SerialTransport(device='/dev/ttyAMA0')
     # transport = SerialTransport(device='/dev/ttyUSB0')
     if reader_addr.startswith('/') or reader_addr.startswith('COM'):
-        transport = SerialTransport(device=reader_addr)
+        transport = SerialTransport(device=reader_addr, baud_rate=baud_rate)
     else:
-        transport = TcpTransport(reader_addr, reader_port=TCP_PORT)
+        transport = TcpTransport(reader_addr, reader_port=tcp_port)
 
     runner = CommandRunner(transport)
     try:
@@ -178,18 +179,21 @@ def read_tags(reader_addr, appender):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) >= 2:
+    parser = argparse.ArgumentParser(description='Continuous read of RFID tags')
+    parser.add_argument('reader_address', help='Reader address (IP or serial port)')
+    parser.add_argument('--tcp-port', type=int, default=TCP_PORT, help='TCP port for reader connection (default: 6000)')
+    parser.add_argument('--baud-rate', type=int, default=57600, help='Baud rate for serial connection (default: 57600)')
+    parser.add_argument('spreadsheet_id', nargs='?', help='Google Sheets spreadsheet ID')
+    args = parser.parse_args()
 
-        appender_thread = None
-        if len(sys.argv) >= 3:
-            from sheets import GoogleSheetAppender
-            appender_thread = GoogleSheetAppender(sys.argv[2])
-            appender_thread.start()
+    appender_thread = None
+    if args.spreadsheet_id is not None:
+        from sheets import GoogleSheetAppender
+        appender_thread = GoogleSheetAppender(args.spreadsheet_id)
+        appender_thread.start()
 
-        read_tags(sys.argv[1], appender_thread)
+    read_tags(args.reader_address, appender_thread, args.tcp_port, args.baud_rate)
 
-        if appender_thread is not None:
-            appender_thread.running = False
-            appender_thread.join()
-    else:
-        print('Usage: {0} <reader-address> [<spreadsheet-id>]'.format(sys.argv[0]))
+    if appender_thread is not None:
+        appender_thread.running = False
+        appender_thread.join()

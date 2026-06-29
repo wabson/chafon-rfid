@@ -2,6 +2,7 @@
 
 # Basic example to write a single tag with an EPC code, which must be a multiple of two bytes
 
+import argparse
 import sys
 
 from math import floor
@@ -59,19 +60,22 @@ def write_tag_text_or_range(runner, text_value):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 3:
-        print('Usage: {0} <reader-address> <epc-text>'.format(sys.argv[0]))
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='Write EPC to a tag')
+    parser.add_argument('reader_address', help='Reader address (IP or serial port)')
+    parser.add_argument('epc_text', help='EPC text to write to the tag')
+    parser.add_argument('--tcp-port', type=int, default=TCP_PORT, help='TCP port for reader connection (default: 6000)')
+    parser.add_argument('--baud-rate', type=int, default=57600, help='Baud rate for serial connection (default: 57600)')
+    args = parser.parse_args()
 
-    reader_addr = sys.argv[1]
+    reader_addr = args.reader_address
     # transport = TcpTransport(reader_addr=reader_addr, reader_port=TCP_PORT)
     # transport = SerialTransport(device='/dev/ttyS0')
     # transport = SerialTransport(device='/dev/ttyAMA0')
     # transport = SerialTransport(device='/dev/ttyUSB0')
     if reader_addr.startswith('/') or reader_addr.startswith('COM'):
-        transport = SerialTransport(device=reader_addr)
+        transport = SerialTransport(device=reader_addr, baud_rate=args.baud_rate)
     else:
-        transport = TcpTransport(reader_addr, reader_port=TCP_PORT)
+        transport = TcpTransport(reader_addr, reader_port=args.tcp_port)
 
     runner = CommandRunner(transport)
 

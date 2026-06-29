@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import sys
 
 from chafon_rfid.base import CommandRunner, ReaderCommand, ReaderInfoFrame
@@ -16,16 +17,16 @@ def get_reader_info(runner):
     return reader_info
 
 
-def print_reader_info(reader_addr):
+def print_reader_info(reader_addr, tcp_port, baud_rate):
 
     # transport = TcpTransport(reader_addr=reader_addr, reader_port=TCP_PORT)
     # transport = SerialTransport(device='/dev/ttyS0')
     # transport = SerialTransport(device='/dev/ttyAMA0')
     # transport = SerialTransport(device='/dev/ttyUSB0')
     if reader_addr.startswith('/') or reader_addr.startswith('COM'):
-        transport = SerialTransport(device=reader_addr)
+        transport = SerialTransport(device=reader_addr, baud_rate=baud_rate)
     else:
-        transport = TcpTransport(reader_addr, reader_port=TCP_PORT)
+        transport = TcpTransport(reader_addr, reader_port=tcp_port)
 
     transport.connect()
     runner = CommandRunner(transport)
@@ -43,7 +44,10 @@ def print_reader_info(reader_addr):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) >= 2:
-        print_reader_info(sys.argv[1])
-    else:
-        print('Usage: {0} <reader-address>'.format(sys.argv[0]))
+    parser = argparse.ArgumentParser(description='Get reader info')
+    parser.add_argument('reader_address', help='Reader address (IP or serial port)')
+    parser.add_argument('--tcp-port', type=int, default=TCP_PORT, help='TCP port for reader connection (default: 6000)')
+    parser.add_argument('--baud-rate', type=int, default=57600, help='Baud rate for serial connection (default: 57600)')
+    args = parser.parse_args()
+
+    print_reader_info(args.reader_address, args.tcp_port, args.baud_rate)
