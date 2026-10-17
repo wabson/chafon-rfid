@@ -3,6 +3,7 @@
 # Basic example to write a single tag with an EPC code, which must be a multiple of two bytes
 
 import argparse
+import itertools
 import time
 
 from math import floor
@@ -63,8 +64,15 @@ def write_tag_text_or_range(runner, text_value, confirm=False, delay=DEFAULT_DEL
     if ':' in text_value:
         range_parts = text_value.split(':')
         start_number = int(range_parts[0])
-        end_number = int(range_parts[1])
-        for tag_number in range(start_number, end_number + 1):
+        if range_parts[1] == '':
+            # Open range such as 101: - keep counting up until interrupted
+            end_number = None
+            tag_numbers = itertools.count(start_number)
+            print('Writing tags from {} onwards, press Ctrl+C to stop'.format(start_number))
+        else:
+            end_number = int(range_parts[1])
+            tag_numbers = range(start_number, end_number + 1)
+        for tag_number in tag_numbers:
             tag_text = str(tag_number)
             if confirm:
                 write_tag_with_confirm(runner, tag_text)
@@ -79,7 +87,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Write EPC to a tag')
     parser.add_argument('reader_address', help='Reader address (IP or serial port)')
-    parser.add_argument('epc_text', nargs='+', help='EPC text to write to the tag, or a range such as 1:10 (multiple values allowed)')
+    parser.add_argument('epc_text', nargs='+', help='EPC text to write to the tag, or a range such as 1:10, or an open range such as 101: which counts up until Ctrl+C is pressed (multiple values allowed)')
     parser.add_argument('--tcp-port', type=int, default=TCP_PORT, help='TCP port for reader connection (default: 6000)')
     parser.add_argument('--baud-rate', type=int, default=57600, help='Baud rate for serial connection (default: 57600)')
     parser.add_argument('--confirm', action='store_true', help='When writing a range, wait for Enter to be pressed before writing each tag')
@@ -98,7 +106,10 @@ if __name__ == "__main__":
 
     runner = CommandRunner(transport)
 
-    for tag_value in args.epc_text:
-        write_tag_text_or_range(runner, tag_value, confirm=args.confirm, delay=args.delay)
-
-    transport.close()
+    try:
+        for tag_value in args.epc_text:
+            write_tag_text_or_range(runner, tag_value, confirm=args.confirm, delay=args.delay)
+    except KeyboardInterrupt:
+        print('\nStopped')
+    finally:
+        transport.close()
