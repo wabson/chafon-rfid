@@ -3,6 +3,7 @@
 # Basic example to write a single tag with an EPC code, which must be a multiple of two bytes
 
 import argparse
+import time
 
 from math import floor
 
@@ -12,6 +13,8 @@ from chafon_rfid.transport import TcpTransport
 from chafon_rfid.transport_serial import SerialTransport
 
 TCP_PORT = 6000
+DEFAULT_DELAY = 3
+RETRY_DELAY = 1
 
 
 def write_epc_bytes(runner, value):
@@ -40,19 +43,34 @@ def write_tag_value(runner, tag_value):
     return None
 
 
-def write_tag_text_or_range(runner, text_value):
+def write_tag_with_confirm(runner, tag_text):
+    print('Write EPC data: {}'.format(tag_text))
+    while True:
+        input('Press Enter to continue')
+        if write_tag_value(runner, tag_text) is True:
+            break
+
+
+def write_tag_with_delay(runner, tag_text, delay):
+    print('Place tag {} on the reader, writing in {:g}s...'.format(tag_text, delay))
+    time.sleep(delay)
+    while write_tag_value(runner, tag_text) is not True:
+        print('Retrying tag {} in {:g}s...'.format(tag_text, RETRY_DELAY))
+        time.sleep(RETRY_DELAY)
+
+
+def write_tag_text_or_range(runner, text_value, confirm=False, delay=DEFAULT_DELAY):
     if ':' in text_value:
         range_parts = text_value.split(':')
         start_number = int(range_parts[0])
         end_number = int(range_parts[1])
         for tag_number in range(start_number, end_number + 1):
             tag_text = str(tag_number)
-            print('Write EPC data: {}'.format(tag_text))
-            while True:
-                input('Press Enter to continue')
-                write_result = write_tag_value(runner, tag_text)
-                if write_result is True:
-                    break
+            if confirm:
+                write_tag_with_confirm(runner, tag_text)
+            else:
+                write_tag_with_delay(runner, tag_text, delay)
+        print('Finished writing tags {} to {}'.format(start_number, end_number))
     else:
         write_tag_value(runner, text_value)
 
@@ -64,6 +82,8 @@ if __name__ == "__main__":
     parser.add_argument('epc_text', nargs='+', help='EPC text to write to the tag, or a range such as 1:10 (multiple values allowed)')
     parser.add_argument('--tcp-port', type=int, default=TCP_PORT, help='TCP port for reader connection (default: 6000)')
     parser.add_argument('--baud-rate', type=int, default=57600, help='Baud rate for serial connection (default: 57600)')
+    parser.add_argument('--confirm', action='store_true', help='When writing a range, wait for Enter to be pressed before writing each tag')
+    parser.add_argument('--delay', type=float, default=DEFAULT_DELAY, help='When writing a range without --confirm, seconds to wait before writing each tag (default: {})'.format(DEFAULT_DELAY))
     args = parser.parse_args()
 
     reader_addr = args.reader_address
@@ -79,6 +99,6 @@ if __name__ == "__main__":
     runner = CommandRunner(transport)
 
     for tag_value in args.epc_text:
-        write_tag_text_or_range(runner, tag_value)
+        write_tag_text_or_range(runner, tag_value, confirm=args.confirm, delay=args.delay)
 
     transport.close()
