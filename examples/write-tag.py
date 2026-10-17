@@ -4,6 +4,7 @@
 
 import argparse
 import itertools
+import re
 import time
 
 from math import floor
@@ -16,6 +17,7 @@ from chafon_rfid.transport_serial import SerialTransport
 TCP_PORT = 6000
 DEFAULT_DELAY = 3
 RETRY_DELAY = 1
+RANGE_PATTERN = re.compile(r'(\d+)[:-](\d*)')
 
 
 def write_epc_bytes(runner, value):
@@ -61,16 +63,16 @@ def write_tag_with_delay(runner, tag_text, delay):
 
 
 def write_tag_text_or_range(runner, text_value, confirm=False, delay=DEFAULT_DELAY):
-    if ':' in text_value:
-        range_parts = text_value.split(':')
-        start_number = int(range_parts[0])
-        if range_parts[1] == '':
-            # Open range such as 101: - keep counting up until interrupted
+    range_match = RANGE_PATTERN.fullmatch(text_value)
+    if range_match:
+        start_number = int(range_match.group(1))
+        if range_match.group(2) == '':
+            # Open range such as 101: or 101- - keep counting up until interrupted
             end_number = None
             tag_numbers = itertools.count(start_number)
             print('Writing tags from {} onwards, press Ctrl+C to stop'.format(start_number))
         else:
-            end_number = int(range_parts[1])
+            end_number = int(range_match.group(2))
             tag_numbers = range(start_number, end_number + 1)
         for tag_number in tag_numbers:
             tag_text = str(tag_number)
@@ -87,7 +89,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Write EPC to a tag')
     parser.add_argument('reader_address', help='Reader address (IP or serial port)')
-    parser.add_argument('epc_text', nargs='+', help='EPC text to write to the tag, or a range such as 1:10, or an open range such as 101: which counts up until Ctrl+C is pressed (multiple values allowed)')
+    parser.add_argument('epc_text', nargs='+', help='EPC text to write to the tag, or a range such as 1:10 or 1-10, or an open range such as 101: or 101- which counts up until Ctrl+C is pressed (multiple values allowed)')
     parser.add_argument('--tcp-port', type=int, default=TCP_PORT, help='TCP port for reader connection (default: 6000)')
     parser.add_argument('--baud-rate', type=int, default=57600, help='Baud rate for serial connection (default: 57600)')
     parser.add_argument('--confirm', action='store_true', help='When writing a range, wait for Enter to be pressed before writing each tag')
