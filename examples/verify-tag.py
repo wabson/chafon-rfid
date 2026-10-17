@@ -86,6 +86,8 @@ def verify_tag_text_or_range(transport, text_value, failed, confirm=False, delay
     range_match = RANGE_PATTERN.fullmatch(text_value)
     if range_match:
         start_number = int(range_match.group(1))
+        # Keep any leading zeros typed in the range start, e.g. 001: gives 001, 002, ...
+        number_width = len(range_match.group(1))
         if range_match.group(2) == '':
             # Open range such as 101: or 101- - keep counting up until interrupted
             end_number = None
@@ -95,7 +97,7 @@ def verify_tag_text_or_range(transport, text_value, failed, confirm=False, delay
             end_number = int(range_match.group(2))
             tag_numbers = range(start_number, end_number + 1)
         for tag_number in tag_numbers:
-            tag_text = str(tag_number)
+            tag_text = str(tag_number).zfill(number_width)
             if confirm:
                 ok = verify_tag_with_confirm(transport, tag_text)
             else:
